@@ -1,0 +1,281 @@
+http://tecadmin.net/setup-hadoop-2-4-single-node-cluster-on-linux/
+http://www.inspiredtechies.com/setting-up-apache-hadoop-single-node-cluster/
+
+Hadoop’s HDFS is a highly fault-tolerant distributed file system and MapReduce computing paradigm
+
+Apache Hadoop 2.6 Nov, 2014
+
+Step 1. ---Java Framework---
+
+#yum install java-1.7.0-openjdk
+#yum install java-1.7.0-openjdk-devel
+
+--------------------
+java -version
+--------------------
+
+Step 2. Creating Hadoop User :: for hadoop working/running
+
+# useradd hadoop
+# passwd hadoop
+
+---------------------
+
+Need to configure SSH - Hadoop requires SSH access to manage its nodes, i.e. remote machines plus your 
+local machine if you want to use Hadoop on it. Going to set up key based ssh to its own account
+
+--------------
+# su - hadoop
+$ ssh -keygen -t rsa
+$ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+$ chmod 0600 ~/.ssh/authorized_keys (0644)
+-------------
+
+Lets verify key based login. Below command should not ask for password but first time it will prompt 
+for adding RSA to the list of known hosts.
+
+-------------
+
+$ ssh localhost 1234
+$ exit
+
+=======================
+
+Step 3. Install Hadoop latest version ::
+
+-----------
+su - hadoop
+$ cd ~
+$ wget http://apache.claz.org/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
+$ tar xzf hadoop-2.6.0.tar.gz
+$ mv hadoop-2.6.0 hadoop
+$ chown -R hadoop:hadoop hadoop
+-----------
+
+Step 4. Configure Hadoop Pseudo-Distributed Mode****
+
+4.1) Setup Environment Variables
+
+First we need to set environment variable uses by hadoop. Edit ~/.bashrc file and append following 
+values at end of file.
+
+-------
+export HADOOP_HOME=/home/hadoop/hadoop
+export HADOOP_INSTALL=$HADOOP_HOME
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
+export JAVA_HOME=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/
+--------
+
+To locate Java path -> JAVA_HOME :: Run below command
+
+update-alternatives --config java
+==========	
+
+4.2) Now apply the changes in current running environment
+------
+$ source ~/.bashrc
+------
+***************************************
+4.3) Now we need to edit configuration files of hadoop as follows:
+
+1. hadoop-env.sh
+2. core-site.xml
+3. mapred-site.xml
+4. hdfs-site.xml
+5. yarn-site.xml
+***************************************
+
+1) This file contains some environment variable settings used by Hadoop. You can use these to affect some aspects of Hadoop daemon behavior, such as where log files are stored, the maximum amount of heap used etc. The only variable you should need to change in this file is JAVA_HOME, which specifies the path to the Java version installation used by Hadoop.
+
+export JAVA_HOME=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/
+export HADOOP_SSH_OPTS="-p 1234"
+
+2) Core-site.xml - Site-specific configuration for a given hadoop installation.
+---------------------------- 
+<configuration>
+<property>
+  <name>fs.default.name</name>
+      <value>hdfs://localhost:9000</value>
+      </property>
+</configuration>
+----------------------------
+More information: http://docs.hortonworks.com/HDPDocuments/HDP1/HDP-1.2.0/bk_installing_manually_book/content/rmp-chap14-2-3-1.html
+
+3) mapred-site.xml - MapReduce configuration options are stored in this file.  This file contains configuration information that overrides the default values for MapReduce parameters. Overrides of the default values for core configuration properties are stored in the mapred-default.xml file.
+----------------------------
+<configuration>
+<property>
+  <name>mapreduce.framework.name</name>
+     <value>yarn</value>
+      </property>
+</configuration>
+----------------------------
+
+4) hdfs-site.xml is used to configure HDFS. Changing the dfs.replication property in hdfs-site.xml will change the default replication for all files placed in HDFS.
+
+----------------
+<configuration>
+<property>
+      <name>dfs.replication</name>
+	  <value>3</value>
+</property>
+
+<property>
+  <name>dfs.name.dir</name>
+      <value>file:///home/hadoop/hadoopdata/hdfs/namenode</value>
+      </property>
+
+<property>
+  <name>dfs.data.dir</name>
+      <value>file:///home/hadoop/hadoopdata/hdfs/datanode</value>
+      </property>
+</configuration>
+------------------
+
+More information - http://princetonits.com/technology/how-to-configure-replication-factor-and-block-size-for-hdfs/
+
+5. yarn-site.xml - Basic conf. file for YARN, YARN is the component responsible for allocating containers to run tasks, coordinating the execution of said tasks, restart them in case of failure, among other housekeeping. Just like HDFS, it also has 2 main components: a ResourceManager which keeps track of the cluster resources and NodeManagers in each of the nodes which communicates with the ResourceManager and sets up containers for execution of tasks.
+
+--------
+<configuration>
+ <property>
+  <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value>
+ </property>
+</configuration>
+--------
+
+===============================
+
+
+4.4) Format Namenode - NameNode contains metadata about data stored in DataNodes, if we format namenode, only metadata gets deleted while data in data node remain in place.
+
+Why needed - formating your file system at the location specified in hdfs-site.xml 
+First time, needed to create a file system of type hdfs.
+
+Command - hdfs namenode -format
+
+=================================
+
+Step 5.  Start Hadoop Cluster ::
+
+-> $ cd $HADOOP_HOME/sbin/
+-> $ start-dfs.sh
+-> $ start-yarn.sh
+
+=================================	
+
+Step 6. Access Hadoop Services in Browser ::
+
+a) Hadoop NameNode started on port 50070 default.
+
+http://blogninja.asia:50070/
+
+b) Access port 8088 for getting the information about cluster and all applications
+
+http://blogninja.asia:8088/
+
+c) Access port 50090 for getting details about secondary namenode.
+
+http://blogninja.asia:50090/
+
+d) Access port 50075 to get details about DataNode
+
+http://blogninja.asia:50075/
+
+=================================
+Step 7. Test Hadoop Single Node Setup
+
+7.1 - Make the HDFS directories required using following commands.
+
+$ bin/hdfs dfs -mkdir /user
+$ bin/hdfs dfs -mkdir /user/hadoop
+
+7.2 - Now browse hadoop distributed file system by opening below url in browser.
+
+http://blogninja.asia:50070/explorer.html#/user/hadoop
+
+Commands basic :: 
+
+1.) Create a directory in HDFS at given path(s) -
+Syntex - bin/hadoop fs -mkdir <paths>
+
+#Example: bin/hadoop fs -mkdir /user/saurzcode/dir1 /user/saurzcode/dir2
+
+2) List the contents of a directory - 
+
+Syntex : bin/hadoop fs -ls <args>
+
+#Example: bin/hadoop fs -ls /
+
+3) Upload and download a file in HDFS - 
+a) Upload
+Syntex - bin/hadoop fs -put <localsrc> ... <HDFS_dest_Path>
+
+#Example - bin/hadoop fs -put /home/hadoop/hadoop/hello.txt  /chirag/gaurav
+
+Verify - bin/hadoop fs -ls /chirag/gaurav
+
+b) Download - 
+Syntex - hadoop fs -get <hdfs_src> <localdst>
+
+Example - bin/hadoop fs -get /chirag/gaurav/hello.txt /home/hadoop/
+
+4) See contents of a file - 
+
+Syntex -  hadoop fs -cat <path[filename]>
+Example - hadoop fs -cat /chirag/gaurav/hello.txt
+
+5) Copy a file from source to destination
+
+Syntex - hadoop fs -cp <source> <dest>
+
+This command allows multiple sources as well in which case the destination must be a directory.
+
+Example - hadoop fs -cp /chirag/gaurav1/hello.txt /chirag/gaurav2/
+
+6) Copy a file from/To Local file system to HDFS
+
+Syntex - hadoop fs -copyFromLocal <localsrc> URI
+
+Similar to put command, except that the source is restricted to a local file reference.
+
+Example - hadoop fs -copyFromLocal /home/hadoop/hello.txt  /chirag/gaurav/hello.txt
+copyToLocal -
+
+Similar to get command, except that the destination is restricted to a local file reference.
+
+Syntex - bin/hadoop fs -copyToLocal [-ignorecrc] [-crc] URI <localdst>
+
+
+
+
+7) Move file from source to destination.
+
+Syntex - bin/hadoop fs -mv <src> <dest>
+
+bin/hadoop fs -mv /chirag/gaurav/hello.txt /chirag/gaurav2/
+
+8) Remove a file or directory in HDFS.
+
+Syntex - bin/hadoop fs -rm <arg>
+
+bin/hadoop fs -rm /chirag/gaurav/hello.txt
+
+Recursive - hadoop fs -rmr <arg>
+
+9) Display last few lines of a file -
+
+bin/hadoop fs -tail /chirag/gaurav/hello.txt
+
+10) Display the aggregate length of a file -
+
+bin/hadoop fs -du /chirag/gaurav/hello.txt
+
+====================================
+====================================

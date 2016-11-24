@@ -1,0 +1,120 @@
+  882  yum install java-1.7.0-openjdk -y
+  883  yum install java-1.7.0-openjdk-devel
+  884  java -version
+  885  sudo groupadd hadoop
+  886  sudo adduser -G hadoop
+  887  sudo useradd -G hadoop
+  888  sudo useradd -G hadoop hadoop
+  889  sudo useradd -g hadoop hadoop
+  890  cat /etc/passwd
+  891  passwd hadoop 
+  892  su - hadoop
+  893  java -version
+  894  su - hadoop
+  895  java -version
+  896  cat /etc/redhat-release 
+  897  cd /opt/
+  898  cd /var/www/html/
+  899  ls
+  900  cd ..
+  901  tar -xvzf blogninja.tar.gz html/
+  902  tar -czf blogninja.tar.gz html/
+  903  ls
+  904  mv blogninja.tar.gz html/
+  905  cd html/
+  906  ls
+  907  du -sh blogninja.tar.gz 
+  908  ls
+  909  du -sh kayako
+  910  du -sh kayako.bak/
+  911  mkdir web
+  912  cd -rvf about/ web/
+  913  cp -rvf about/ web/
+  914  ls
+  915  cp -rf info.php web/
+  916  cp -rf radius/ web/
+  917  cp -rf test.php web/
+  918  cp -rf coovachilli/ web/
+  919  cp -rf css/ web/
+  920  cp -rf images/ web/
+  921  cp-rf mail/ web/
+  922  cp -rf mail/ web/
+  923  cp -rf w3layouts-license.txt web/
+  924  cp -rf tools/ web/
+  925  cp -rf index.html web/
+  926  cd nouse/
+  927  ls
+  928  cd ..
+  929  du 0sh nouse/
+  930  du -sh nouse/
+  931  cd nouse/
+  932  mv kayako.sql.tar.gz ../
+  933  cd ..
+  934  ls
+  935  cp -rf nouse/ web/
+  936  tar -czf website.tar.gz web/
+  937  du -sh website.tar.gz 
+  938  cd web
+  939  ll
+  940  du -sh
+  941  du -sh *
+  942  cd about/
+  943  du -sh *
+  944  cd ba
+  945  cd backup/
+  946  ls
+  947  du -sh site.tar.gz 
+  948  cat qq 
+  949  cd ..
+  950  ls
+  951  cd ..
+  952  cd about/
+  953  ls
+  954  mv backupold/ ../../ 
+  955  mv backup/ ../../ 
+  956  cd ..
+  957  rm -rvf website.tar.gz 
+  958  tar -czf website.tar.gz web/
+  959  du -sh website.tar.gz 
+  960  vi /etc/aliases
+  961  useradd aliasa
+  962  passwd aliasa
+  963  useradd aliasb
+  964  passwd aliasb
+  965  vim /etc/aliases
+  966  newaliases
+  967  mail aliasa
+  968  su - aliasa
+  969  su - aliasb
+  970  mail
+  971  cd /var/spool/mail/
+  972  ls
+  973  cat /etc/aliases
+  974  newaliases
+  975  vi /etc/aliases
+  976  newaliases
+  977  mail chirag
+  978  su - chirag
+  979  cd /var/www/html/
+  980  ls
+  981  cd mail/
+  982  ls
+  983  cd ..
+  984  ls
+  985  cat /etc/dovecot/dovecot.conf 
+  986  cd /root/Maildir/
+  987  ls
+  988  cd tmp/
+  989  ls
+  990  cd ..
+  991  cd cur
+  992  ls
+  993  cd .. 
+  994  cd new 
+  995  ls
+  996  vim /etc/dovecot/conf.d/
+  997  useradd arman
+  998  passwd arman
+  999  cd /var/www/html/
+ 1000  ls
+ 1001  history 
